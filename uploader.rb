@@ -1,6 +1,7 @@
 require "mechanize"
 require "Nokogiri"
 require "Dotenv"
+require "net/ftp"
 
 class UploadAgent
   def initialize
@@ -9,8 +10,8 @@ class UploadAgent
 
   def login
       Dotenv.load
-      userid = 'raynawalsh@gmail.com'
-      password = 'Lzb74710019!'
+      userid = ENV['username']
+      password = ENV['password']
       login_page = @agent.get 'https://iwantclips.com/home/login?redirect=https://iwantclips.com/'
       # log in passing in username and pasword
       form = login_page.forms_with(id: 'login_form')
@@ -19,7 +20,12 @@ class UploadAgent
       # return the results of loging in
       form[0].submit
     end
-    
+    def ftp
+      ftp = Net::FTP.new(ENV['ftp_server'], ENV['ftp_username'], ENV['ftp_password'])
+      ftp.delete '/Users/shawnaduvall/Downloads/1920_1080_IMG_2171.mov'
+      ftp.list('*')
+    end
+
     def add
       page = @agent.get 'https://iwantclips.com/content_factory/videos/add'
       form = page.forms_with(action: 'https://iwantclips.com/content_factory/videos/save')
@@ -44,7 +50,5 @@ class UploadAgent
   end 
 
   a = UploadAgent.new
-  a.login
-  a.add
-  a.confirm
+  a.ftp
 
