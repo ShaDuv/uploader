@@ -1,27 +1,24 @@
 require "Watir"
 require "Dotenv"
 require "net/ftp"
+require "capybara"
 
 class UploadAgent
   def initialize
     Dotenv.load
     @agent = Watir::Browser.start 'https://iwantclips.com/home/login?redirect=https://iwantclips.com/'
     @file_path = '/Users/shawnaduvall/Downloads/GOLDEN BG 01.mp4'
-    @file_name = @file_path.split('/')[-1]
+    @file_name = @file_path.split('/')[-1].to_s
   end
 
   def login
       userid = ENV['username']
       password = ENV['password']
       # log in passing in username and pasword
-      u = @agent.text_field name: 'email'
-      p = @agent.text_field name: 'password'
-
-      u.set userid
-      p.set password
-      # return the results of loging in
-      btn = @agent.button id: 'loginBtn'
-      btn.click
+      @agent.text_field(name: 'email').set(userid)
+      @agent.text_field(name: 'password').set(password)
+      @agent.button(id: 'loginBtn').click
+      
     end
 
     def ftp_add
@@ -37,32 +34,31 @@ class UploadAgent
     end
 
     def add
-      link = @agent.link text: "Sell Items"
-      link.click
+      filename = @file_name
 
-      link = @agent.link text: "Add a Video"
-      link.click
+      @agent.link(text: "Sell Items").click!
+      @agent.link(text: "Add a Video").click!
+      @agent.text_field(name: 'title').set("Test")
+      @agent.textarea(name: 'description').set("This is a test upload.")
+      @agent.radio(value: 'later').set
+      # date format is 8/3/2020, 10:14:36 PM
+      @agent.div(class: "body").click!
+      @agent.checkbox(name: "useTwitter").uncheck
+      @agent.link(text: 'Choose FTP File').click
+      @agent.radio(name: 'image_radio', value: filename).set
+  
+      @agent.radio(name: 'status', value: '5').set
+      @agent.radio(name: 'is_private', value: "1").set
+      @agent.radio(name: 'is_private', value: "1").uncheck
+      @agent.checkbox(name: 'model_agreement').check
+      @agent.field_with(name: 'ftp_file').value = "GOLDEN BG 01.mp4"
+      @agent.submit
+      @agent.text_field(name: 'publish_time').set("8/3/2020, 10:14:36 PM")
 
-      title = @agent.text_field name: 'title'
-      title.set "Test"
 
-      description = @agent.textarea name: 'description'
-      description.set "This is a test upload."
+      #Not currently working
+      #category = @agent.select_list id: 'category', and keywords
 
-      category = @agent.select_list id: 'category'
-      
-
-      form.field_with(name: 'category[]').value = ['Mesmerize', 'Audio Only']
-      form.field_with(name: 'keywords[]').value = %w[ASMR Mindwash Addiction]
-      form.checkbox(name: "useTwitter").uncheck
-      form.radiobutton(name: 'twitterAttachment').value = "none"
-      form.field_with(name: 'price').value = "15"
-      form.radiobutton(name: 'status', value: '5').check
-      form.radiobutton(name: 'is_private', value: "1").check
-      form.radiobutton(name: 'is_private', value: "1").uncheck
-      form.checkbox(name: 'model_agreement').check
-      form.field_with(name: 'ftp_file').value = "GOLDEN BG 01.mp4"
-      form.submit
     end
 
     def confirm
