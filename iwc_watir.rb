@@ -1,4 +1,4 @@
-require "Watir"
+require "Watir-webdriver"
 require "Dotenv"
 require "net/ftp"
 require "capybara"
@@ -6,6 +6,7 @@ require "capybara"
 class UploadAgent
   def initialize
     Dotenv.load
+    Watir::Browser.new :firefox 
     @agent = Watir::Browser.start 'https://iwantclips.com/home/login?redirect=https://iwantclips.com/'
     @file_path = '/Users/shawnaduvall/Downloads/GOLDEN BG 01.mp4'
     @file_name = @file_path.split('/')[-1].to_s
@@ -35,10 +36,11 @@ class UploadAgent
 
     def add
       filename = @file_name
+      filepath =
       #navigate to form
       @agent.link(text: "Sell Items").click!
       @agent.link(text: "Add a Video").click!
-      @agent.text_field(name: 'title').set("Test")
+      @agent.text_field(name: 'title').wait_until(&:present?).set("Test")
       @agent.text_field(name: 'price').set("999")
       @agent.textarea(name: 'description').set("This is a test upload.")
       @agent.radio(value: 'later').set
@@ -46,23 +48,20 @@ class UploadAgent
       @agent.radio(name: 'status', value: '5').set
       @agent.radio(name: 'is_private', value: "0").set
       @agent.checkbox(name: 'model_agreement').check
-       
-      # date format is 8/3/2020, 10:14:36 PM
-      # date has to be entered last until I figure out how to close the date selector box
-      @agent.text_field(name: 'publish_time').set("8/3/2020, 10:14:36 PM")
-
-      #add video and preview (currently preview will not actually generate and gets stuck on loop)
-      @agent.link(text: 'Choose FTP File').click
+      @agent.ul(class: "chzn-choices").click!
+      @agent.text_field(value: "Select").set("Mesmerize")
+      @agent.send_keys :enter
+      @agent.ul(class: "chzn-choices").click!
+      @agent.text_field(value: "Select").set("Audio Only")
+      @agent.send_keys :enter
+      @agent.link(text: 'Choose FTP File').click!
       @agent.radio(name: 'image_radio', value: filename).set
-      @agent.button(text: "Launch Preview Generator").click
-      @agent.checkbox(name: "preview_image").click
-
-      @agent.button(id: 'savebtn').click
-
-
-      #Not currently working
-      #category = @agent.select_list id: 'category', and keywords
-
+      @agent.button(text: "Launch Preview Generator").wait_until(&:present?).click!
+      @agent.checkbox(id: "preview_image").check
+      @agent.button(id: "save-btn").click!
+      @agent.button(id: "save-preview-btn").wait_until(&:present?).click!
+      @agent.text_field(name: 'publish_time').set("12/13/2020, 10:14:36 PM")
+      @agent.button(id: 'savebtn').wait_until(&:present?).click!
     end
 
     def confirm
