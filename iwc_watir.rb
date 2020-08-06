@@ -35,25 +35,29 @@ class UploadAgent
 
     def add
       filename = @file_name
-
+      #navigate to form
       @agent.link(text: "Sell Items").click!
       @agent.link(text: "Add a Video").click!
       @agent.text_field(name: 'title').set("Test")
+      @agent.text_field(name: 'price').set("999")
       @agent.textarea(name: 'description').set("This is a test upload.")
       @agent.radio(value: 'later').set
-      # date format is 8/3/2020, 10:14:36 PM
-      @agent.div(class: "body").click!
       @agent.checkbox(name: "useTwitter").uncheck
+      @agent.radio(name: 'status', value: '5').set
+      @agent.radio(name: 'is_private', value: "0").set
+      @agent.checkbox(name: 'model_agreement').check
+       
+      # date format is 8/3/2020, 10:14:36 PM
+      # date has to be entered last until I figure out how to close the date selector box
+      @agent.text_field(name: 'publish_time').set("8/3/2020, 10:14:36 PM")
+
+      #add video and preview (currently preview will not actually generate and gets stuck on loop)
       @agent.link(text: 'Choose FTP File').click
       @agent.radio(name: 'image_radio', value: filename).set
-  
-      @agent.radio(name: 'status', value: '5').set
-      @agent.radio(name: 'is_private', value: "1").set
-      @agent.radio(name: 'is_private', value: "1").uncheck
-      @agent.checkbox(name: 'model_agreement').check
-      @agent.field_with(name: 'ftp_file').value = "GOLDEN BG 01.mp4"
-      @agent.submit
-      @agent.text_field(name: 'publish_time').set("8/3/2020, 10:14:36 PM")
+      @agent.button(text: "Launch Preview Generator").click
+      @agent.checkbox(name: "preview_image").click
+
+      @agent.button(id: 'savebtn').click
 
 
       #Not currently working
