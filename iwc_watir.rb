@@ -1,6 +1,4 @@
 require 'watir'
-require 'Dotenv'
-require 'net/ftp'
 require 'selenium-webdriver'
 
 class UploadAgent
@@ -10,8 +8,8 @@ class UploadAgent
     @agent = Watir::Browser.new
     @file_path = '/Users/shawnaduvall/Downloads/1.mp3'
     @file_name = @file_path.split('/')[-1].to_s
-    @wide_photo = '/Users/shawnaduvall/Downloads/1.jpg'
-    @wide_photo_name = @wide_photo.split('/')[-1].to_s
+    @webphoto = '/Users/shawnaduvall/Downloads/1.jpg'
+    @webphoto_name = @webphoto.split('/')[-1].to_s
   end
 
   def login
@@ -25,25 +23,10 @@ class UploadAgent
       
     end
 
-    def ftp_add
-      Dotenv.load
-      ftp = Net::FTP.new(ENV['ftp_server'] , ENV['ftp_username'], ENV['ftp_password'])
-      ftp.put @file_path
-      ftp.put @wide_photo
-      puts ftp.list('*')
-    end
-
-    def ftp_delete
-      ftp = Net::FTP.new(ENV['ftp_server'] , ENV['ftp_username'], ENV['ftp_password'])
-      ftp.delete @file_name
-      ftp.delete @wide_photo
-      puts ftp.list('*')
-    end
-
     def add
       filename = @file_name
       filepath = @filepath
-      wide_photo = "/#{@wide_photo_name}"
+      webphoto = "/#{@webphoto_name}"
       @agent.link(text: 'Sell Items').click!
       @agent.link(text: 'Add a PDF/Doc/Audio').click!
       @agent.text_field(name: 'title').wait_until(&:present?).set('Test')
@@ -71,8 +54,8 @@ class UploadAgent
       p 'select mp3'
       @agent.link(href: 'https://iwantclips.com/content_factory/items/choose_ftp_prevew').click!
       sleep(5)
-      p @agent.radio(name: 'image_radio', value: wide_photo).exists?
-      @agent.radio(name: 'image_radio', value: wide_photo).set
+      p @agent.radio(name: 'image_radio', value: webphoto).exists?
+      @agent.radio(name: 'image_radio', value: webphoto).set
       p 'selectjpg'
       @agent.text_field(name: 'publish_time').set('12/13/2020, 10:14:36 PM')
       @agent.send_keys :enter
@@ -82,9 +65,7 @@ class UploadAgent
     end
   end 
 
-  a = UploadAgent.new
-  #a.ftp_delete
-  #a.ftp_add
+a = UploadAgent.new
   a.login
   a.add
 

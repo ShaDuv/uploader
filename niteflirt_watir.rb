@@ -1,31 +1,25 @@
 require "watir"
+require 'selenium-webdriver'
 
-site = Watir::Browser.start 'http://niteflirt.com/login'
+class IWCAgent
+  def initialize
+    Dotenv.load
+    Watir.default_timeout = 60
+    @agent = Watir::Browser.new
+    @file_path = '/Users/shawnaduvall/Downloads/1.mp3'
+    @file_name = @file_path.split('/')[-1].to_s
+    @sqphoto = '/Users/shawnaduvall/Downloads/1.jpg'
+    @sqphoto_name = @sqphoto.split('/')[-1].to_s
+  end
 
 
 def login
-  u = site.text_field name: 'login'
-  p = site.text_field name: 'password'
-  btn = site.button name: 'commit'
-
-  u.set 
-  p.set 
-  btn.click
+  userid = ENV['username']
+  password = ENV['nfpassword']
+  @agent.goto('http://niteflirt.com/login')
+  @agent.text_field(name: 'login').set(userid)
+  @agent.text_field(name: 'password').set(password)
+  @agent.button(name: 'commit').click
 end
 
-def upload
-  l = site.link text: 'MY ACCOUNT'
-  fm = site.link text: 'File Manager'
-
-  l.click
-  fm.click
-
-   upld_btn1 = site.button text: 'Upload'
-   upld_btn1.click
-
-   c = site.checkbox rel: "upload-confirmation"
-   c.set
-
-   files = site.span class: 'fileinput-button'
-   files.click
-
+end
