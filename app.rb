@@ -1,8 +1,10 @@
 require_all 'lib'
 
-class UploaderAgent
-attr_acessor :title, :description, :price, :date, :filepath
-attr_read :filename, :photoname
+class Recording
+  include FtpAgent
+
+  attr_acessor :title, :description, :price, :date, :filepath
+  attr_read :filename, :photoname
 
   def initalize (title, description, price, date, filepath, photopath, sq_photopath)
     @title = title
@@ -15,4 +17,5 @@ attr_read :filename, :photoname
     @filename = @filepath.split('/')[-1].to_s
     @photoname =  @photopath.split('/')[-1].to_s
   end
+  
 end

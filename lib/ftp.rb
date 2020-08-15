@@ -1,7 +1,8 @@
 require 'Dotenv'
 require 'net/ftp'
 
-Class FtpAgent
+module FtpAgent
+  
   def ftp_add
       Dotenv.load
       ftp = Net::FTP.new(ENV['ftp_server'] , ENV['ftp_username'], ENV['ftp_password'])

@@ -36,5 +36,5 @@ class NFAgent
   end 
 
   a = NFAgent.new
-  a.ftp_add
+  
 
