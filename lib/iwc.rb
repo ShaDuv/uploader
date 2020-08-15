@@ -1,7 +1,7 @@
 require 'watir'
 require 'selenium-webdriver'
 
-class UploadAgent
+class IWCAgent
   def initialize
     Dotenv.load
     Watir.default_timeout = 60
@@ -15,7 +15,6 @@ class UploadAgent
   def login
       userid = ENV['username']
       password = ENV['password']
-      # log in passing in username and pasword
       @agent.goto('https://iwantclips.com/home/login?redirect=https://iwantclips.com/')
       @agent.text_field(name: 'email').set(userid)
       @agent.text_field(name: 'password').set(password)
@@ -24,7 +23,7 @@ class UploadAgent
     end
 
     def add
-      filename = @file_name
+      filename = @filename
       filepath = @filepath
       webphoto = "/#{@webphoto_name}"
       @agent.link(text: 'Sell Items').click!
